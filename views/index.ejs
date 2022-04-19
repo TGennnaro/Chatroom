@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/style.css" />
+        <link rel="stylesheet" href="https://cheesedevelopment.com/file/dps.css"/>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <script src="https://cheesedevelopment.com/file/util.js"></script>
+        <title>Chat Room</title>
+    </head>
+    <body>
+        <div class="content">
+            <div class="side-nav">
+                <button id="my-chats" class="nav-button selected-nav">
+                    <span>My Chats</span>
+                    <span>1</span>
+                </button>
+                <button id="discover" class="nav-button">Discover</button>
+                <hr>
+                <button id="profile" class="nav-button">Profile</button>
+                <button id="signout" class="nav-button">Sign Out</button>
+            </div>
+            <div class="content-container">
+                <div class="chat-rooms">
+                    <% if (typeof rooms != "undefined") { %>
+                        <% for (const [id, data] of Object.entries(rooms)) { %> 
+                            <a href="/chat/room/<%=id%>" style="text-decoration: none;">
+                                <div class="chat-room-node<%=(data.selected ? " selected-room" : "")%>">
+                                    <span class="material-icons">chat_bubble</span>
+                                    <div>
+                                        <span class="chat-room-title"><%=data.title%></span>
+                                        <div class="chat-room-recent-item">
+                                            <% if (data.newestMsg) { %>
+                                                <span class="chat-room-recent-message"><%=(data.newestMsg.poster+": "+data.newestMsg.message)%></span>
+                                                <span class="chat-room-message-time">1 min</span>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        <% } %>
+                    <% } %>
+                </div>
+                <div class="message-container">
+                    <% if (typeof room != "undefined") { %> 
+                        <div class="chat-log">
+                            <% if (typeof room.messages != "undefined") { %>
+                                <% for (const [id, data] of Object.entries(room.messages)) { %>
+                                    <div class="message">
+                                        <div class="message-self">
+                                            <span class="message-username"><%=data.poster%></span>
+                                            <div class="message-content"><%=data.message%></div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% } %>
+                        </div>
+                        <div class="message-inputs">
+                            <div class="message-input-container">
+                                <input type="text" placeholder=" " class="message-input">
+                                <span class="message-input-placeholder">Type something...</span>
+                            </div>
+                            <button class="message-send"><span class="material-icons">send</span></button>
+                        </div>
+                    <% } %> 
+                </div>
+            </div>
+        </div>
+        <script>
+            for (const nav of cl("nav-button")) {
+                nav.addEventListener("click", function(e) {
+                    if (!nav.classList.contains("selected-nav")) {
+                        for (const navBtn of cl("nav-button")) {
+                            navBtn.classList.remove("selected-nav");
+                        }
+                        nav.classList.add("selected-nav");
+                    } else {
+                        nav.classList.remove("selected-nav");
+                    }
+                });
+            }
+            for (const node of cl("chat-room-node")) {
+                node.addEventListener("click", function(e) {
+                    if (!node.classList.contains("selected-room")) {
+                        for (const room of cl("chat-room-node")) {
+                            room.classList.remove("selected-room");
+                        }
+                        node.classList.add("selected-room");
+                    } else {
+                        node.classList.remove("selected-room");
+                    }
+                });
+            }
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js" integrity="sha512-MgkNs0gNdrnOM7k+0L+wgiRc5aLgl74sJQKbIWegVIMvVGPc1+gc1L2oK9Wf/D9pq58eqIJAxOonYPVE5UwUFA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="/script.js"></script>
+    </body>
+</html>

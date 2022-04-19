@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/account.css">
+    <script src="https://cheesedevelopment.com/file/util.js"></script>
+    <title>Register</title>
+</head>
+<body>
+    <div class="content">
+        <div class="register-side">
+            <h2 class="register-text">Already have an account?</h2>
+            <a href="/chat/login">
+                <button class="account-button register-button" id="register">Log in</button>
+            </a>
+        </div>
+        <div class="login-side">
+            <h1>Register</h1>
+            <form action="/chat/register" method="POST">
+                <input type="text" class="info-input" id="email" name="email" placeholder="Email">
+                <input type="text" class="info-input" id="username" name="username" placeholder="Username">
+                <input type="password" class="info-input" id="password" name="password" placeholder="Password">
+                <a href="">Forgot your password?</a>
+                <button class="account-button login-button">Sign up</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

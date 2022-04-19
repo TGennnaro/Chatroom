@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+:root {
+    --primary: #F6434E;
+    --secondary: #F94E77;
+    --tertiary: #E84623;
+    --tertiary-hover: #e45c3d;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    background-color: #E1E1E1;
+    display: grid;
+    place-items: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.content {
+    width: 45%;
+    height: 55%;
+    background: white;
+    display: flex;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 4px 4px 10px 2px #00000044;
+}
+
+.login-side {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-side h1 {
+    margin-top: 15%;
+    margin-bottom: 10%;
+}
+
+.info-input {
+    background: #F0F0F0;
+    width: 325px;
+    height: 45px;
+    margin: 0.6rem;
+    padding: 0 1rem;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    font-size: 1rem;
+}
+
+.login-side a {
+    margin: 1rem 0;
+}
+
+.register-side {
+    width: 50%;
+    background: linear-gradient(to right, var(--primary), var(--secondary));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.register-side > * {
+    margin: 1rem 0;
+}
+
+.register-text {
+    color: white;
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.account-button {
+    width: 170px;
+    height: 45px;
+    border: none;
+    outline: none;
+    border-radius: 45px;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 200ms ease;
+}
+
+.login-button {
+    background-color: var(--tertiary);
+    margin-top: 1rem;
+}
+
+.login-button:hover {
+    background-color: var(--tertiary-hover);
+}
+
+.register-button {
+    background-color: transparent;
+    border: 3px solid white;
+}
+
+.register-button:hover {
+    background-color: white;
+    color: var(--primary);
+}
