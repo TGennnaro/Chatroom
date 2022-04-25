@@ -20,12 +20,13 @@ app.use(cors({ origin: "http://localhost:4000" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/views/public"));
 app.set("view engine", "ejs");
-app.use(flash());
-app.use(session({
+const sessionMiddleware = session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false
-}));
+});
+app.use(sessionMiddleware)
+app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride("_method"));
@@ -48,11 +49,10 @@ app.get("/chat/register", auth.checkNotAuthenticated, function(req, res) {
     res.render("register");
 });
 
-app.post("/chat/register", passport.authenticate("local-register", {
+app.post("/chat/register", auth.registerUser, passport.authenticate("local-login", {
         failureRedirect: "/chat/register",
         failureMessage: true
     }), function(req, res) {
-        dbManager.registerUsername(req.body.username, req.body.email);
         res.redirect("/chat");
     }
 );
@@ -68,7 +68,7 @@ app.get("/chat/room/:roomID", auth.checkAuthenticated, async function (req, res)
     if (room) {
         rooms[roomID].selected = true;
     }
-    res.render("index", { rooms: rooms, room: room, chat: chat});
+    res.render("index", { rooms: rooms, room: room, roomID: roomID, chat: chat, uid: req.user.id});
 });
 
 const server = app.listen(port, () => {
@@ -77,16 +77,51 @@ const server = app.listen(port, () => {
 
 const io = socketio(server);
 
+const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+
+io.use(wrap(sessionMiddleware));
+io.use(wrap(passport.initialize()));
+io.use(wrap(passport.session()));
+
+io.use((socket, next) => {
+    if (socket.request.user) {
+        next();
+    } else {
+        next(new Error("Unauthorized"));
+    }
+});
+
 io.on("connection", socket => {
-    console.log("New user connected");
+    const session = socket.request.session;
+    session.socketId = socket.id;
+    session.save();
 
-    socket.username = "Anonymous";
+    socket.roomID = socket.handshake.query.room;
+    socket.join(socket.roomID);
 
-    socket.on("change_username", data => {
-        socket.username = data.username;
-    });
+    socket.emit("receive_username", {username: socket.request.user.username});
+
+    socket.on("join_room", async d => {
+        const currentMessages = Object.keys(d.messages);
+        socket.listener = await dbManager.attachListener(socket.roomID, function(data) {
+            if (data != null) {
+                const newMessages = Object.keys(data).filter(n => !currentMessages.includes(n));
+                for (let key of newMessages) {
+                    if (data[key].message != null && data[key].poster != null) {
+                        io.in(socket.roomID).emit("receive_message", {id: key, message: data[key].message, username: data[key].poster, time: "00:00"});
+                        currentMessages.push(key);
+                    }
+                }
+            }
+        });
+
+        socket.on("disconnect", () => {
+            dbManager.detachListener(socket.listener);
+            socket.leave(socket.roomID);
+        });
+    })
 
     socket.on("send_message", data => {
-        io.sockets.emit("receive_message", {message: data.message, username: socket.username, time: "00:00"});
+        dbManager.registerMessage(socket.roomID, data.message, socket.request.user.username, socket.request.user.id);
     });
 });

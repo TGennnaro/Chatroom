@@ -1,30 +1,33 @@
-const username = "TGennaro";
-
-let socket;
 let log;
 let input;
 let send;
 
 (function init() {
-    socket = io.connect("http://localhost:4000");
-
     log = id("chat-log");
-    input = id("chat-input");
-    send = id("chat-send");
-    send.addEventListener("click", sendMessage);
-    input.addEventListener("keypress", (e) => {
-        if (e.key == "Enter") {sendMessage();}
-    });
-    function sendMessage() {
-        socket.emit("send_message", {message: input.value});
+    input = id("message-input");
+    send = id("message-send");
+    if (send && input) {
+        send.addEventListener("click", sendMessage);
+        input.addEventListener("keypress", (e) => {
+            if (e.key == "Enter") {sendMessage();}
+        });
     }
 
+    function sendMessage() {
+        socket.emit("send_message", {message: input.value});
+        input.value = "";
+    }
+
+    socket.on("receive_username", data => {
+        socket.username = data.username;
+    })
+
     socket.on("receive_message", data => {
-        addMessage(data.message, data.username, data.time);
+        addMessage(data.id, data.message, data.username, data.time, data.username == socket.username);
     });
 })();
 
-function addMessage(message, user=username, time) {
+function addMessage(id, message, username, time, self) {
     if (time == null) {
         const date = new Date();
         const hour = String(date.getHours()).padStart(2, "0");
@@ -32,11 +35,11 @@ function addMessage(message, user=username, time) {
         time = hour+":"+min;
     }
 
-    const newMsg = log.el("div").class("message");
-    newMsg.el("span").class("timestamp").text(time);
-    newMsg.el("span").class("user").text(user)
-        .el("span").text(":");
-    newMsg.el("span").class("text").text(message);
+    const msg = log.el("div").class("message");
+    msg.id = id;
+    const content = msg.el("div").class(self ? "message-self" : "message-other");
+    content.el("span").class("message-username").text(username);
+    content.el("div").class("message-content").text(message);
 
     log.scrollTop = log.scrollHeight;
 }

@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="https://cheesedevelopment.com/file/dps.css"/>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <script src="https://cheesedevelopment.com/file/util.js"></script>
-        <title>Chat Room</title>
+        <title><%=(typeof room != "undefined" ? room.title+" - " : "")%>Chat Room</title>
     </head>
     <body>
         <div class="content">
@@ -45,11 +45,11 @@
                 </div>
                 <div class="message-container">
                     <% if (typeof room != "undefined") { %> 
-                        <div class="chat-log">
+                        <div class="chat-log" id="chat-log">
                             <% if (typeof room.messages != "undefined") { %>
                                 <% for (const [id, data] of Object.entries(room.messages)) { %>
                                     <div class="message">
-                                        <div class="message-self">
+                                        <div class="<%=(uid == data.posterUID ? "message-self" : "message-other")%>">
                                             <span class="message-username"><%=data.poster%></span>
                                             <div class="message-content"><%=data.message%></div>
                                         </div>
@@ -59,10 +59,10 @@
                         </div>
                         <div class="message-inputs">
                             <div class="message-input-container">
-                                <input type="text" placeholder=" " class="message-input">
+                                <input type="text" placeholder=" " class="message-input" id="message-input">
                                 <span class="message-input-placeholder">Type something...</span>
                             </div>
-                            <button class="message-send"><span class="material-icons">send</span></button>
+                            <button class="message-send" id="message-send"><span class="material-icons">send</span></button>
                         </div>
                     <% } %> 
                 </div>
@@ -95,6 +95,13 @@
             }
         </script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js" integrity="sha512-MgkNs0gNdrnOM7k+0L+wgiRc5aLgl74sJQKbIWegVIMvVGPc1+gc1L2oK9Wf/D9pq58eqIJAxOonYPVE5UwUFA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+            let socket = io.connect("http://localhost:4000?room=<%=(typeof roomID !="undefined" ? roomID : "")%>");
+            <% if (typeof room != "undefined") { %>
+                const roomMessages = <%-JSON.stringify(room.messages)%>;
+                socket.emit("join_room", {messages: roomMessages});
+            <% } %>
+        </script>
         <script src="/script.js"></script>
     </body>
 </html>

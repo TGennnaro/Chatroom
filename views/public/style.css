@@ -106,9 +106,10 @@ body {
 }
 
 .chat-room-node > div {
-    width: 100%;
-    padding: 0 10px;
+    width: calc(100% - 28px);
+    padding-left: 10px;
     pointer-events: none;
+    overflow: hidden;
 }
 
 .chat-room-node .material-icons {
@@ -177,7 +178,7 @@ body {
 }
 
 .message-username {
-    margin: 0 0.5rem;
+    margin: 0.3rem 0.5rem;
     opacity: 80%;
     display: block;
 }
