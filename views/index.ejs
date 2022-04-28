@@ -13,11 +13,16 @@
     <body>
         <div class="content">
             <div class="side-nav">
-                <button id="my-chats" class="nav-button selected-nav">
-                    <span>My Chats</span>
-                    <span>1</span>
-                </button>
-                <button id="discover" class="nav-button">Discover</button>
+                <a href="/chat"><button id="my-chats" class="nav-button
+                        <%=(typeof selectedNav != "undefined" && selectedNav == "Chats" ? " selected-nav" : "")%>
+                    ">
+                    Chats</button>
+                </a>
+                <a href="/chat/discover">
+                    <button id="discover" class="nav-button
+                        <%=(typeof selectedNav != "undefined" && selectedNav == "Discover" ? " selected-nav" : "")%>
+                    ">Discover</button>
+                </a>
                 <hr>
                 <button id="profile" class="nav-button">Profile</button>
                 <button id="signout" class="nav-button">Sign Out</button>
@@ -26,7 +31,7 @@
                 <div class="chat-rooms">
                     <% if (typeof rooms != "undefined") { %>
                         <% for (const [id, data] of Object.entries(rooms)) { %> 
-                            <a href="/chat/room/<%=id%>" style="text-decoration: none;">
+                            <a href="/chat/room/<%=id%><%=(typeof selectedNav != "undefined" && selectedNav == "Discover" ? "?selected=Discover" : "")%>" style="text-decoration: none;">
                                 <div class="chat-room-node<%=(data.selected ? " selected-room" : "")%>">
                                     <span class="material-icons">chat_bubble</span>
                                     <div>
@@ -34,7 +39,7 @@
                                         <div class="chat-room-recent-item">
                                             <% if (data.newestMsg) { %>
                                                 <span class="chat-room-recent-message"><%=(data.newestMsg.poster+": "+data.newestMsg.message)%></span>
-                                                <span class="chat-room-message-time">1 min</span>
+                                                <span class="chat-room-message-time"><%=data.timeFromNewest%></span>
                                             <% } %>
                                         </div>
                                     </div>

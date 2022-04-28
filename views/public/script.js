@@ -43,3 +43,7 @@ function addMessage(id, message, username, time, self) {
 
     log.scrollTop = log.scrollHeight;
 }
+
+window.addEventListener("load", () => {
+    log.scrollTop = log.scrollHeight;
+});

@@ -58,17 +58,28 @@ app.post("/chat/register", auth.registerUser, passport.authenticate("local-login
 );
 
 app.get("/chat", auth.checkAuthenticated, async function (req, res) {
-    res.render("index", { rooms: await dbManager.getRooms() });
+    res.render("index", {rooms: await dbManager.getRooms(), selectedNav: "Chats"});
+});
+
+app.get("/chat/discover", auth.checkAuthenticated, async function (req, res) {
+    res.render("index", {rooms: await dbManager.getPublicRooms(), selectedNav: "Discover"});
 });
 
 app.get("/chat/room/:roomID", auth.checkAuthenticated, async function (req, res) {
     const roomID = req.params.roomID;
-    const rooms = await dbManager.getRooms();
+    let selected = req.query.selected;
+    let rooms;
+    if (selected != null && selected == "Discover") {
+        rooms = await dbManager.getPublicRooms();
+    } else {
+        selected = "Chats";
+        rooms = await dbManager.getRooms();
+    }
     const room = await dbManager.getRoom(roomID);
     if (room) {
         rooms[roomID].selected = true;
     }
-    res.render("index", { rooms: rooms, room: room, roomID: roomID, chat: chat, uid: req.user.id});
+    res.render("index", { rooms: rooms, room: room, roomID: roomID, chat: chat, uid: req.user.id, selectedNav: selected});
 });
 
 const server = app.listen(port, () => {
